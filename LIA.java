@@ -36,7 +36,7 @@ public class LIA
        //crear.write("holamundo;como estas;\r\n1;2");
         crear.write("@relation setDatos\r\n\r\n");
         crear.write("@attribute nombre STRING\r\n");
-        crear.write("@attribute sexo {femenino, masculino, otro}\r\n");
+        crear.write("@attribute sexow {femenino, masculino, otro}\r\n");
         crear.write("@attribute tipo_prestacion_term STRING\r\n");
         crear.write("@attribute tag STRING\r\n");
         crear.write("@attribute automatico STRING\r\n");
