@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.bayes.NaiveBayes;
@@ -41,8 +42,7 @@ public class Co_Training
         
         FileReader archivo = new FileReader(nomArchivo);
         BufferedReader aux = new BufferedReader(archivo);
-        File nuevo = new File("C:\\Users\\PC\\Documents\\NetBeansProjects\\LIA\\src\\lia_aux\\dic");
-        FileWriter crear = new FileWriter(nuevo);
+     
         int contPBayes=0, contNBayes=0, contPJ48=0, contNJ48=0,intervaloB=0,intervaloJ=0;
         try {
             
@@ -69,49 +69,59 @@ public class Co_Training
             auxJ48.setClassIndex(auxJ48.numAttributes()-1);
             Classifier a = new NaiveBayes();
             
-            Filtro fil = new Filtro();
-//            Filtro fil = (Filtro)SerializationHelper.read(new FileInputStream("C:\\Users"
-//                    + "\\PC\\Documents\\NetBeansProjects\\LIA\\src\\lia_aux\\FilManual"));;
-            
-           
-            //leer el clasificador        
-//            Filtro fil2 = 
+            Filtro fil ;
+            try {
+                fil = (Filtro)SerializationHelper.read(new FileInputStream("C:\\Users"
+                    + "\\PC\\Documents\\NetBeansProjects\\LIA\\src\\lia_aux\\FilManual"));
+            }
+            catch(Exception e)
+            {
+                fil = new Filtro();
+            }
+
             
             instancesBayes = fil.aplicarFiltro(instancesBayes);
             NumericToNominal filtro = new NumericToNominal(); 
             filtro.setInputFormat(instancesBayes);
            
-            FilteredClassifier fc = new FilteredClassifier();
-            fc.setFilter(filtro);
-            fc.setClassifier(a);
+            FilteredClassifier fc;
+           
+           try
+           {     
+             fc = (FilteredClassifier)SerializationHelper.read(new FileInputStream("C:\\Users"
+                    + "\\PC\\Documents\\NetBeansProjects\\LIA\\src\\lia_aux\\bayes"));
+           
+           }
+           catch(Exception e)
+           {
+                fc= new FilteredClassifier();
+                fc.setFilter(filtro);
+                fc.setClassifier(a);
             
-            fc.buildClassifier(instancesBayes);
-            //guardar el classificador
-//            SerializationHelper.write(new FileOutputStream("C:\\Users\\PC\\Documents\\NetBeansProjects\\LIA\\src\\lia\\bayes"), fc);
-            //leer el clasificador        
-//            FilteredClassifier bayes = (FilteredClassifier)SerializationHelper.read(new FileInputStream("C:\\Users"
-//                    + "\\PC\\Documents\\NetBeansProjects\\LIA\\src\\lia_aux\\bayes"));
-//            
-          //  System.out.println(filtro.getOutputFormat());
-          //  nuevo = filtro.getDictionaryFileToSaveTo();
-           // System.out.println(nuevo.toString());
+           }
+           fc.buildClassifier(instancesBayes);
+         
             Classifier b = new J48();
             instancesJ48 = fil.aplicarFiltro(instancesJ48);
             NumericToNominal filtro2 = new NumericToNominal(); 
             filtro2.setInputFormat(instancesJ48);
             
-            FilteredClassifier fc2 = new FilteredClassifier();
-            fc2.setFilter(filtro2);
-            fc2.setClassifier(b);
-            
-            fc2.buildClassifier(instancesJ48);
-            
-         
-           // SerializationHelper.write(new FileOutputStream("C:\\Users\\PC\\Documents\\NetBeansProjects\\"
-           //         + "LIA\\src\\lia\\j48"), fc2);*/
-//            FilteredClassifier j48 = (FilteredClassifier)SerializationHelper.read(new FileInputStream("C:\\Users"
-//                    + "\\PC\\Documents\\NetBeansProjects\\LIA\\src\\lia_aux\\j48"));
+            FilteredClassifier fc2;
+                        
+          try
+           {     
+             fc2 = (FilteredClassifier)SerializationHelper.read(new FileInputStream("C:\\Users"
+                    + "\\PC\\Documents\\NetBeansProjects\\LIA\\src\\lia_aux\\j48"));
            
+           }
+           catch(Exception e)
+           {
+                fc2= new FilteredClassifier();
+                fc2.setFilter(filtro2);
+                fc2.setClassifier(b);
+            
+           }
+           fc2.buildClassifier(instancesJ48);
             Evaluation evaluacionA = new Evaluation(instancesBayes);
             Evaluation evaluacionB = new Evaluation(instancesJ48);
             evaluacionA.evaluateModel(fc, instancesBayes);
@@ -241,8 +251,7 @@ public class Co_Training
                     + "\\Documents\\NetBeansProjects\\LIA\\src\\lia\\bayes"), fc);
             SerializationHelper.write(new FileOutputStream("C:\\Users\\PC\\Documents\\NetBeansProjects"
                     + "\\LIA\\src\\lia\\J48"), fc2);
-            fil.convertir_CVS(auxBayes,"bayes");
-            fil.convertir_CVS(auxJ48,"J48");
+           
             if(precisionBayes < precisionJ48)
             {
                 fil.convertir_Arff(instancesJ48, nomArchivo);
@@ -253,10 +262,10 @@ public class Co_Training
             }
             //leer(auxBayes,crear);
            // leer(instances, crear);
-//           ObjectOutputStream objFiltro = new ObjectOutputStream(new FileOutputStream("C:\\Users\\PC\\Documents\\"
-//                   + "NetBeansProjects\\LIA\\src\\lia_aux\\FilManual"));
-//           objFiltro.writeObject(fil);
-           crear.close();
+           ObjectOutputStream objFiltro = new ObjectOutputStream(new FileOutputStream("C:\\Users\\PC\\Documents\\"
+                   + "NetBeansProjects\\LIA\\src\\lia_aux\\FilManual"));
+           objFiltro.writeObject(fil);
+//           crear.close();
            aux.close();
 //           objFiltro.close();
             return instancesBayes;
@@ -311,7 +320,5 @@ public class Co_Training
     }
     
     
-
-   
     
 }
