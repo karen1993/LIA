@@ -12,7 +12,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
-import static lia_aux.LIA.leer;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
